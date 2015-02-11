@@ -21,7 +21,7 @@ from werkzeug.local import LocalProxy
 from werkzeug.security import safe_str_cmp
 
 from .utils import config_value as cv, get_config, md5, url_for_security, string_types
-from .views import create_blueprint
+from .views import create_blueprint, login
 from .forms import LoginForm, ConfirmRegisterForm, RegisterForm, \
     ForgotPasswordForm, ChangePasswordForm, ResetPasswordForm, \
     SendConfirmationForm, PasswordlessLoginForm
@@ -185,6 +185,10 @@ _default_forms = {
     'passwordless_login_form': PasswordlessLoginForm,
 }
 
+_default_views = {
+    'login_view': login
+}
+
 
 def _user_loader(user_id):
     return _security.datastore.find_user(id=user_id)
@@ -276,6 +280,10 @@ def _get_state(app, datastore, **kwargs):
     ))
 
     for key, value in _default_forms.items():
+        if key not in kwargs or not kwargs[key]:
+            kwargs[key] = value
+
+    for key, value in _default_views.items():
         if key not in kwargs or not kwargs[key]:
             kwargs[key] = value
 
@@ -398,7 +406,8 @@ class Security(object):
                  login_form=None, confirm_register_form=None,
                  register_form=None, forgot_password_form=None,
                  reset_password_form=None, change_password_form=None,
-                 send_confirmation_form=None, passwordless_login_form=None):
+                 send_confirmation_form=None, passwordless_login_form=None,
+                 login_view=None):
         """Initializes the Flask-Security extension for the specified
         application and datastore implentation.
 
@@ -424,7 +433,8 @@ class Security(object):
                            reset_password_form=reset_password_form,
                            change_password_form=change_password_form,
                            send_confirmation_form=send_confirmation_form,
-                           passwordless_login_form=passwordless_login_form)
+                           passwordless_login_form=passwordless_login_form,
+                           login_view=login_view)
 
         if register_blueprint:
             app.register_blueprint(create_blueprint(state, __name__))

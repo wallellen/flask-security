@@ -338,7 +338,7 @@ def create_blueprint(state, import_name):
     else:
         bp.route(state.login_url,
                  methods=['GET', 'POST'],
-                 endpoint='login')(login)
+                 endpoint='login')(state.login_view)
 
     if state.registerable:
         bp.route(state.register_url,
