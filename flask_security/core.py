@@ -20,7 +20,7 @@ from werkzeug.datastructures import ImmutableList
 from werkzeug.local import LocalProxy
 
 from .utils import config_value as cv, get_config, md5, url_for_security, string_types
-from .views import create_blueprint
+from .views import create_blueprint, login
 from .forms import LoginForm, ConfirmRegisterForm, RegisterForm, \
     ForgotPasswordForm, ChangePasswordForm, ResetPasswordForm, \
     SendConfirmationForm, PasswordlessLoginForm
@@ -112,11 +112,14 @@ _default_messages = {
     'INVALID_LOGIN_TOKEN': ('Invalid login token.', 'error'),
     'DISABLED_ACCOUNT': ('Account is disabled.', 'error'),
     'EMAIL_NOT_PROVIDED': ('Email not provided', 'error'),
+    'ORG_ID_NOT_PROVIDED': ('Org Id not provided', 'error'),
+    'USER_NO_NOT_PROVIDED': ('User No not provided', 'error'),
     'INVALID_EMAIL_ADDRESS': ('Invalid email address', 'error'),
     'PASSWORD_NOT_PROVIDED': ('Password not provided', 'error'),
     'PASSWORD_NOT_SET': ('No password is set for this user', 'error'),
     'PASSWORD_INVALID_LENGTH': ('Password must be at least 6 characters', 'error'),
     'USER_DOES_NOT_EXIST': ('Specified user does not exist', 'error'),
+    'USER_NO_DOES_NOT_EXIST': ('Specified user no does not exist', 'error'),
     'INVALID_PASSWORD': ('Invalid password', 'error'),
     'PASSWORDLESS_LOGIN_SUCCESSFUL': ('You have successfuly logged in.', 'success'),
     'PASSWORD_RESET': ('You successfully reset your password and you have been logged in automatically.', 'success'),
@@ -146,6 +149,10 @@ _default_forms = {
     'change_password_form': ChangePasswordForm,
     'send_confirmation_form': SendConfirmationForm,
     'passwordless_login_form': PasswordlessLoginForm,
+}
+
+_default_views = {
+    'login_view': login
 }
 
 
@@ -237,6 +244,10 @@ def _get_state(app, datastore, **kwargs):
     ))
 
     for key, value in _default_forms.items():
+        if key not in kwargs or not kwargs[key]:
+            kwargs[key] = value
+
+    for key, value in _default_views.items():
         if key not in kwargs or not kwargs[key]:
             kwargs[key] = value
 
@@ -356,7 +367,8 @@ class Security(object):
                  login_form=None, confirm_register_form=None,
                  register_form=None, forgot_password_form=None,
                  reset_password_form=None, change_password_form=None,
-                 send_confirmation_form=None, passwordless_login_form=None):
+                 send_confirmation_form=None, passwordless_login_form=None,
+                 login_view=None):
         """Initializes the Flask-Security extension for the specified
         application and datastore implentation.
 
@@ -382,7 +394,8 @@ class Security(object):
                            reset_password_form=reset_password_form,
                            change_password_form=change_password_form,
                            send_confirmation_form=send_confirmation_form,
-                           passwordless_login_form=passwordless_login_form)
+                           passwordless_login_form=passwordless_login_form,
+                           login_view=login_view)
 
         if register_blueprint:
             app.register_blueprint(create_blueprint(state, __name__))
