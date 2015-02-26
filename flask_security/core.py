@@ -44,7 +44,7 @@ _default_config = {
     'CHANGE_URL': '/change',
     'CONFIRM_URL': '/confirm',
     'POST_LOGIN_VIEW': '/',
-    'POST_LOGOUT_VIEW': '/',
+    'POST_LOGOUT_VIEW': '/login',
     'CONFIRM_ERROR_VIEW': None,
     'POST_REGISTER_VIEW': None,
     'POST_CONFIRM_VIEW': None,
