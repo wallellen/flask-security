@@ -20,7 +20,7 @@ from werkzeug.datastructures import ImmutableList
 from werkzeug.local import LocalProxy
 
 from .utils import config_value as cv, get_config, md5, url_for_security, string_types
-from .views import create_blueprint, login
+from .views import create_blueprint, login, logout
 from .forms import LoginForm, ConfirmRegisterForm, RegisterForm, \
     ForgotPasswordForm, ChangePasswordForm, ResetPasswordForm, \
     SendConfirmationForm, PasswordlessLoginForm
@@ -44,7 +44,7 @@ _default_config = {
     'CHANGE_URL': '/change',
     'CONFIRM_URL': '/confirm',
     'POST_LOGIN_VIEW': '/',
-    'POST_LOGOUT_VIEW': '/login',
+    'POST_LOGOUT_VIEW': '/',
     'CONFIRM_ERROR_VIEW': None,
     'POST_REGISTER_VIEW': None,
     'POST_CONFIRM_VIEW': None,
@@ -152,7 +152,8 @@ _default_forms = {
 }
 
 _default_views = {
-    'login_view': login
+    'login_view': login,
+    'logout_view': logout,
 }
 
 
@@ -368,7 +369,7 @@ class Security(object):
                  register_form=None, forgot_password_form=None,
                  reset_password_form=None, change_password_form=None,
                  send_confirmation_form=None, passwordless_login_form=None,
-                 login_view=None):
+                 login_view=None, logout_view=None):
         """Initializes the Flask-Security extension for the specified
         application and datastore implentation.
 
@@ -395,7 +396,8 @@ class Security(object):
                            change_password_form=change_password_form,
                            send_confirmation_form=send_confirmation_form,
                            passwordless_login_form=passwordless_login_form,
-                           login_view=login_view)
+                           login_view=login_view,
+                           logout_view=logout_view)
 
         if register_blueprint:
             app.register_blueprint(create_blueprint(state, __name__))

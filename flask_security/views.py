@@ -318,7 +318,9 @@ def create_blueprint(state, import_name):
                    subdomain=state.subdomain,
                    template_folder='templates')
 
-    bp.route(state.logout_url, endpoint='logout')(logout)
+    bp.route(state.logout_url,
+             methods=['GET', 'POST'],
+             endpoint='logout')(state.logout_view)
 
     if state.passwordless:
         bp.route(state.login_url,
